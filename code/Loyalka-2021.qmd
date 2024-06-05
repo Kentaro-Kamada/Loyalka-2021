@@ -1,0 +1,214 @@
+---
+title: "再現コード（Loyalka 2021）"
+author: 鎌田健太郎
+date: 2024-06-05
+---
+
+## 再現する論文
+
+Loyalka, Prashant, Ou Lydia Liu, Guirong Li, Elena Kardanova, Igor Chirikov, Shangfeng Hu, Ningning Yu, Liping Ma, Fei Guo, Tara Beteille, Namrata Tognatta, Lin Gu, Guangming Ling, Denis Federiakin, Huan Wang, Saurabh Khanna, Ashutosh Bhuradia, Zhaolei Shi & Yanyan Li, 2021, "Skill Levels and Gains in University STEM Education in China, India, Russia and the United States," _Nature Human Behaviour_, 5(7): 892–904. [https://doi.org/10.1038/s41562-021-01062-3](https://doi.org/10.1038/s41562-021-01062-3)
+
+## 著者によるデータ・コード
+
+論文の著者により、Stataコードおよびデータが公開されている。[https://osf.io/4t8cu/](https://osf.io/4t8cu/)
+
+websiteより以下のdtaファイルをダウンロードして、`data`フォルダに保存する。
+
+- `college STEM main data - first.dta`
+- `college STEM main data - secondB.dta`
+- `college STEM main data - third.dta`
+
+
+## パッケージ読み込み
+
+```{r}
+#| cache: false
+
+library(tidyverse)
+library(haven)
+library(srvyr)
+library(gtsummary)
+library(gt)
+library(scales)
+library(kamaken)
+
+theme_set(theme_bw(base_family = 'Hiragino Sans', base_size = 12))
+
+```
+
+
+## Supplementary Table 1
+
+Mean characteristics of first-year undergraduate (bachelor's degree) computer science and electrical engineering students across countries and types of institutions
+
+- `dad_coll`: Dad college degree
+- `mom_coll`: Mom college degree
+- `took_cee`: Took entrance exam
+
+```{r}
+
+data_first <- 
+  read_dta("data/college STEM main data - first.dta") |> 
+  as_factor()
+
+
+df_first <- 
+  data_first |> 
+  drop_na(sw_f) |> 
+  as_survey_design(ids = univcode, weights = sw_f)
+
+# All sample
+df_first |> 
+  filter(stu_merge != 'Endline only' & grade == 1) |> 
+  select(country_n, age, female, dad_coll, mom_coll, took_cee) |> 
+  tbl_svysummary(
+    by = country_n,
+    missing = 'no',
+    type = everything() ~ "continuous",
+    digits = everything() ~ 3,
+    statistic = list(all_continuous() ~ "{mean} [{sd}]")
+  )
+
+# Note: 0:non-elite, 1:elite
+df_first |> 
+  filter(stu_merge != 'Endline only' & grade == 1) |> 
+  select(country_n, elite, age, female, dad_coll, mom_coll, took_cee) |> 
+  tbl_strata(
+    strata = country_n,
+    \(x) tbl_svysummary(
+      x,
+      by = elite,
+      missing = 'no',
+      type = everything() ~ "continuous",
+      digits = everything() ~ 3,
+      statistic = list(all_continuous() ~ "{mean} [{sd}]"),
+      include = !country_n
+    )
+  )
+
+  
+```
+
+## Supplementary Table 2
+
+Time spent studying (hours per day)
+
+- `in_college_any2`: Time on college studies
+- `out_college_any2`: Time on outside tutoring or mentoring
+
+```{r}
+
+
+df_first |>
+  filter(grade == 1 & str_detect(testtype2, 'M', negate = TRUE)) |> 
+  tbl_svysummary(
+    by = country_n,
+    missing = 'no',
+    type = everything() ~ "continuous",
+    digits = everything() ~ 2,
+    statistic = list(all_continuous() ~ "{mean} [{sd}]"),
+    include = c(in_college_any2, out_college_any2)
+  )
+
+df_first |>
+  filter(grade == 1 & str_detect(testtype2, 'M', negate = TRUE)) |> 
+  tbl_strata(
+    strata = country_n,
+    \(x) tbl_svysummary(
+      x,
+      by = elite,
+      missing = 'no',
+      type = everything() ~ "continuous",
+      digits = everything() ~ 2,
+      statistic = list(all_continuous() ~ "{mean} [{sd}]"),
+      include = c(in_college_any2, out_college_any2)
+    )
+  )
+
+```
+
+
+## Figure 1 and Table 1
+
+Critical Thinking Skill Levels across China, India, Russia, and the US AND Critical Thinking Skill Gains across China, India, Russia, and the US (raw and adjusted for dropout)
+
+
+```{r}
+
+data_second <- 
+  read_dta("data/college STEM main data - secondB.dta") |> 
+  as_factor()
+
+df_second <- 
+  data_second |> 
+  drop_na(sw_f) |>
+  as_survey_design(ids = univcode, weights = sw_f)
+
+```
+
+
+```{r}
+res_fig1 <- 
+  df_second |> 
+  filter(str_detect(testtype, 'CT') & no_goCT == 0 & grade %in% c(1, 3)) |> 
+  group_by(country_n, grade, endline) |> 
+  summarise(
+    n = n(),
+    mean = survey_mean(z_CT, vartype = 'ci'),
+  ) |> 
+  ungroup() |> 
+  mutate(
+    year = case_when(
+      grade == 1 & endline == 0 ~ 'Start of year 1',
+      grade == 1 & endline == 1 ~ 'End of year 2',
+      grade == 3 & endline == 0 ~ 'Start of year 3',
+      grade == 3 & endline == 1 ~ 'End of year 4'
+    ) |> fct_relevel('Start of year 1', 'End of year 2', 'Start of year 3', 'End of year 4')
+  ) |> 
+  select(!c(grade, endline))
+```
+
+### Figure 1
+
+```{r}
+
+res_fig1 |>
+  ggplot(aes(x = year, y = mean, ymin = mean_low, ymax = mean_upp)) +
+  geom_pointrange()+
+  facet_wrap(vars(country_n))+
+  labs(
+    x = NULL,
+    y = 'Critical Thinking Skill Level'
+  )+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+### Table 1
+
+```{r}
+
+res_fig1 |> 
+  mutate(
+    n = number(n, big.mark = ','),
+    mean = number(mean, accuracy = 0.01),
+    ci = str_glue('{number(mean_low, accuracy = 0.01)} - {number(mean_upp, accuracy = 0.01)}')
+  ) |> 
+  select(!c(mean_low, mean_upp)) |>
+  pivot_longer(cols = c(mean, ci, n), names_to = 'stats') |> 
+  pivot_wider(names_from = country_n, values_from = value) |> 
+  gt(groupname_col = 'year', row_group_as_column = TRUE)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+

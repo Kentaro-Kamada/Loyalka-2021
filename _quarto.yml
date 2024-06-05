@@ -1,0 +1,17 @@
+project:
+  title: "Loyalka-2021"
+  execute-dir: project
+format: 
+  html:
+    toc: true
+    embed-resources: true
+execute:
+  warning: false
+  message: false
+  cache: true
+knitr:
+  opts_chunk: 
+    dev: svg
+  
+
+
