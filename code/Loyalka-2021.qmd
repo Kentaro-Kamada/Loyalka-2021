@@ -203,9 +203,98 @@ res_fig1 |>
 ```
 
 
+## Figure 2 and Table 2
+
+Academic Skill Levels and Gains Across China, India, and Russia (Grades 1 and 3, Math and Physics)
 
 
 
+```{r}
+
+res_fig2_math <- 
+  df_second |> 
+  filter(str_detect(testtype, 'M') & no_gomath == 0 & grade == 1) |> 
+  group_by(country_n, grade, endline) |> 
+  summarise(
+    n = n(),
+    mean = survey_mean(z_math, vartype = 'ci'),
+  ) |> 
+  ungroup() 
+
+res_fig2_phys <-
+  df_second |> 
+  filter(str_detect(testtype, 'P') & no_gophys == 0 & grade == 1) |> 
+  group_by(country_n, grade, endline) |> 
+  summarise(
+    n = n(),
+    mean = survey_mean(z_phys, vartype = 'ci'),
+  ) |> 
+  ungroup()
+
+res_fig2 <-
+  bind_rows(
+    `Math Skill Level` = res_fig2_math, 
+    `Physics Skill Level` = res_fig2_phys, 
+    .id = 'skill'
+  ) |> 
+  mutate(
+    year = case_when(
+      grade == 1 & endline == 0 ~ 'Start of year 1',
+      grade == 1 & endline == 1 ~ 'End of year 2',
+      grade == 3 & endline == 0 ~ 'Start of year 3',
+      grade == 3 & endline == 1 ~ 'End of year 4'
+    ) |> fct_relevel('Start of year 1', 'End of year 2', 'Start of year 3', 'End of year 4')
+  ) |> 
+  select(!c(grade, endline))
+  
+```
+
+
+### Figure 2
+
+```{r}
+
+res_fig2 |>
+  ggplot(aes(x = year, y = mean, ymin = mean_low, ymax = mean_upp)) +
+  geom_pointrange()+
+  facet_grid(rows = vars(skill), cols = vars(country_n))+
+  labs(
+    x = NULL,
+    y = 'Skill Level'
+  )+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+### Table 2
+
+```{r}
+
+res_fig2 |> 
+  mutate(
+    n = number(n, big.mark = ','),
+    mean = number(mean, accuracy = 0.001),
+    ci = str_glue('{number(mean_low, accuracy = 0.001)} - {number(mean_upp, accuracy = 0.001)}')
+  ) |> 
+  select(!c(mean_low, mean_upp)) |>
+  pivot_longer(cols = c(mean, ci, n), names_to = 'stats') |> 
+  pivot_wider(names_from = country_n, values_from = value) |> 
+  gt(groupname_col = 'skill', row_group_as_column = TRUE)
+
+```
+
+
+## Supplementary Tables 4
+
+Cross-Country: Controlling for Family Background and Out-of-college Activities
+
+
+```{r}
+
+
+
+```
 
 
 
