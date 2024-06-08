@@ -11,7 +11,8 @@ execute:
   cache: true
 knitr:
   opts_chunk: 
-    dev: svg
+    dev: ragg_png
+    out.width: '100%'
   
 
 
