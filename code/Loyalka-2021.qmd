@@ -496,11 +496,43 @@ data_second |>
 
 ```
 
+## 学習時間の分布
+
+```{r}
+data_first |> 
+  drop_na(sw_f) |> 
+  mutate(
+    elite = case_when(
+      elite == 0 ~ 'Non-elite',
+      elite == 1 ~ 'Elite'
+    ) |> fct_relevel('Non-elite', 'Elite'),
+  ) |> 
+  ggplot(aes(in_college_any2, color = elite, weight = sw_f))+
+  geom_density()+
+  facet_wrap(vars(country_n))
+```
+
 
 ```{r}
 
-data_second |> glimpse()
-data_second |> select(tutoring_hours, paid_work_hours, ses1) |> modelsummary::datasummary_skim()
+data_first |> 
+  drop_na(sw_f) |> 
+  mutate(
+    elite = case_when(
+      elite == 0 ~ 'Non-elite',
+      elite == 1 ~ 'Elite'
+    ) |> fct_relevel('Non-elite', 'Elite'),
+  ) |> 
+  ggplot(aes(in_college_any2, color = elite, weight = sw_f))+
+  geom_boxplot()+
+  facet_wrap(vars(country_n))
+
+```
+
+
+
+
+```{r}
 
 res <- 
   df_second |> 
@@ -510,14 +542,13 @@ res <-
     design = _, family = gaussian
   )
 
-summary(res)
-
-avg_predictions(res, variables = list(tutoring_hours = seq(0, 5.7, 0.2)), wts = res$weights) |> 
+avg_slopes(
+  res, wts = res$weights,
+) |> 
   as_tibble() |> 
-  ggplot(aes(tutoring_hours, estimate, ymin = conf.low, ymax = conf.high))+
-  geom_line()+
-  geom_ribbon(alpha = 0.2)
-  
+  gt() |> 
+  fmt_number()
+
 ```
 
 
