@@ -1,7 +1,7 @@
 ---
 title: "再現コード（Loyalka 2021）"
 author: 鎌田健太郎
-date: 2024-06-05
+date: 2024-06-10
 ---
 
 ## 再現する論文
@@ -480,6 +480,7 @@ res_tab4 |>
 
 
 ```{r}
+#| eval: false
 
 data_first |> 
   glimpse()
@@ -530,11 +531,13 @@ data_first |>
 ```
 
 
+## Critical Thinkingの予測（Average Marginal Effects）
 
+2年終了時のCritical Thinkingのスコアを予測する回帰モデル
 
 ```{r}
 
-res <- 
+res_pred_CT <- 
   df_second |> 
   filter(str_detect(testtype, 'CT') & no_goCT == 0 & grade %in% 1 & endline == 1) |> 
   survey::svyglm(
@@ -543,13 +546,12 @@ res <-
   )
 
 avg_slopes(
-  res, wts = res$weights,
+  res_pred_CT, wts = res_pred_CT$weights,
 ) |> 
   as_tibble() |> 
+  select(term:std.error, conf.low, conf.high) |> 
   gt() |> 
-  fmt_number()
+  fmt_number(decimals = 3)
 
 ```
-
-
 

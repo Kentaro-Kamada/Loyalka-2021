@@ -153,22 +153,6 @@
       ],
       "Hash": "543776ae6848fde2f48ff3816d0628bc"
     },
-    "bayestestR": {
-      "Package": "bayestestR",
-      "Version": "0.13.2",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "R",
-        "datawizard",
-        "graphics",
-        "insight",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "4a6a2eebe2db1dfb1c792c4ed91e73dc"
-    },
     "bigD": {
       "Package": "bigD",
       "Version": "0.2.0",
@@ -440,19 +424,6 @@
         "methods"
       ],
       "Hash": "8ee9ac56ef633d0c7cab8b2ca87d683e"
-    },
-    "datawizard": {
-      "Package": "datawizard",
-      "Version": "0.11.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "insight",
-        "stats",
-        "utils"
-      ],
-      "Hash": "b99dd5378fefe0f87f44fd1723b9c71e"
     },
     "dbplyr": {
       "Package": "dbplyr",
@@ -1288,26 +1259,6 @@
       ],
       "Hash": "4f50122dc256b1b6996a4703fecea821"
     },
-    "modelsummary": {
-      "Package": "modelsummary",
-      "Version": "2.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "checkmate",
-        "data.table",
-        "generics",
-        "glue",
-        "insight",
-        "methods",
-        "parameters",
-        "performance",
-        "tables",
-        "tinytable"
-      ],
-      "Hash": "2baf92e86ef6212381d6c738d801587e"
-    },
     "munsell": {
       "Package": "munsell",
       "Version": "0.5.1",
@@ -1365,23 +1316,6 @@
       ],
       "Hash": "5410df8d22bd36e616f2a2343dbb328c"
     },
-    "parameters": {
-      "Package": "parameters",
-      "Version": "0.21.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "bayestestR",
-        "datawizard",
-        "graphics",
-        "insight",
-        "methods",
-        "stats",
-        "utils"
-      ],
-      "Hash": "9f8ce76f256b193e1536c827c7adc125"
-    },
     "pdftools": {
       "Package": "pdftools",
       "Version": "3.4.0",
@@ -1392,21 +1326,6 @@
         "qpdf"
       ],
       "Hash": "9f04cfdc668ad1149d865a2996ac2045"
-    },
-    "performance": {
-      "Package": "performance",
-      "Version": "0.11.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "bayestestR",
-        "datawizard",
-        "insight",
-        "stats",
-        "utils"
-      ],
-      "Hash": "eb8ecde248cd610ae3097f5d00718cbd"
     },
     "pillar": {
       "Package": "pillar",
@@ -1893,20 +1812,6 @@
       ],
       "Hash": "213b6b8ed5afbf934843e6c3b090d418"
     },
-    "tables": {
-      "Package": "tables",
-      "Version": "0.9.25",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "htmltools",
-        "knitr",
-        "stats",
-        "utils"
-      ],
-      "Hash": "5540393ad9fed813e150fc4c7dfa08b8"
-    },
     "textshaping": {
       "Package": "textshaping",
       "Version": "0.4.0",
@@ -2028,17 +1933,6 @@
         "cpp11"
       ],
       "Hash": "c5f3c201b931cd6474d17d8700ccb1c8"
-    },
-    "tinytable": {
-      "Package": "tinytable",
-      "Version": "0.3.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R",
-        "methods"
-      ],
-      "Hash": "f6e686513a32bf7bc645c3c14d7984ad"
     },
     "tinytex": {
       "Package": "tinytex",
